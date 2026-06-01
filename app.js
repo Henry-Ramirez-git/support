@@ -1,13 +1,13 @@
 // Firebase initialization and database references
 // Replace the config object with your own Firebase project settings.
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  databaseURL: "YOUR_DATABASE_URL",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDk4JrO7MItIn6_PBDtr0fBqQYXBeqNuiM",
+  authDomain: "dropbox-47184.firebaseapp.com",
+  projectId: "dropbox-47184",
+  storageBucket: "dropbox-47184.firebasestorage.app",
+  messagingSenderId: "43247427374",
+  appId: "1:43247427374:web:aa8fcbe26a6834d8f164bf",
+  measurementId: "G-38JBSYDSCG"
 };
 
 firebase.initializeApp(firebaseConfig);
