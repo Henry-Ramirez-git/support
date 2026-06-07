@@ -3,6 +3,7 @@
 const firebaseConfig = {
   apiKey: "AIzaSyDk4JrO7MItIn6_PBDtr0fBqQYXBeqNuiM",
   authDomain: "dropbox-47184.firebaseapp.com",
+  databaseURL: "https://dropbox-47184-default-rtdb.europe-west1.firebasedatabase.app/",
   projectId: "dropbox-47184",
   storageBucket: "dropbox-47184.firebasestorage.app",
   messagingSenderId: "43247427374",
