@@ -232,7 +232,13 @@ function renderTodos(todos) {
   todos.forEach((todo) => {
     const card = document.createElement('div');
     card.className = 'card';
-    const itemsHtml = todo.items.map(item => `
+    // Firebase entfernt leere Arrays – items kann null oder ein Objekt sein
+    const itemsArray = todo.items
+      ? Array.isArray(todo.items)
+        ? todo.items
+        : Object.values(todo.items)
+      : [];
+    const itemsHtml = itemsArray.map(item => `
       <li>
         <label>
           <input type="checkbox" data-board="${todo.id}" data-item="${item.id}" ${item.done ? 'checked' : ''} />
@@ -254,7 +260,9 @@ function renderTodos(todos) {
       checkbox.addEventListener('change', handleTodoCheckbox);
     });
 
-    card.querySelector('[data-board-preview]').addEventListener('click', () => openTodoPreview(todo));
+    // todo mit normalisierten items übergeben
+    card.querySelector('[data-board-preview]').addEventListener('click', () =>
+      openTodoPreview({ ...todo, items: itemsArray }));
     todoGallery.appendChild(card);
   });
 }
@@ -335,22 +343,39 @@ filterTag.addEventListener('change', applyFilters);
 filterDate.addEventListener('change', applyFilters);
 
 function subscribeFiles() {
-  database.ref('files').on('value', (snapshot) => {
-    const rawData = snapshot.val() || {};
-    allFiles = Object.keys(rawData).map((key) => ({ id: key, ...rawData[key] }));
-    allFiles.sort((a, b) => b.createdAt - a.createdAt);
-    populateTagFilter(allFiles);
-    applyFilters();
-  });
+  fileGallery.innerHTML = '<p style="color:gray">Lade Dateien…</p>';
+  database.ref('files').on(
+    'value',
+    (snapshot) => {
+      const rawData = snapshot.val() || {};
+      allFiles = Object.keys(rawData).map((key) => ({ id: key, ...rawData[key] }));
+      allFiles.sort((a, b) => b.createdAt - a.createdAt);
+      populateTagFilter(allFiles);
+      applyFilters();
+    },
+    (error) => {
+      // Zeigt Fehler direkt auf der Seite an – hilft bei der Diagnose
+      fileGallery.innerHTML = `<p style="color:red">⚠️ Fehler beim Laden der Dateien: ${error.message}<br>Bitte Firebase-Rules überprüfen (Realtime Database → Rules → ".read": true)</p>`;
+      console.error('subscribeFiles Fehler:', error);
+    }
+  );
 }
 
 function subscribeTodos() {
-  database.ref('todos').on('value', (snapshot) => {
-    const rawData = snapshot.val() || {};
-    allTodos = Object.keys(rawData).map((key) => ({ id: key, ...rawData[key] }));
-    allTodos.sort((a, b) => b.createdAt - a.createdAt);
-    renderTodos(allTodos);
-  });
+  todoGallery.innerHTML = '<p style="color:gray">Lade Boards…</p>';
+  database.ref('todos').on(
+    'value',
+    (snapshot) => {
+      const rawData = snapshot.val() || {};
+      allTodos = Object.keys(rawData).map((key) => ({ id: key, ...rawData[key] }));
+      allTodos.sort((a, b) => b.createdAt - a.createdAt);
+      renderTodos(allTodos);
+    },
+    (error) => {
+      todoGallery.innerHTML = `<p style="color:red">⚠️ Fehler beim Laden der Boards: ${error.message}</p>`;
+      console.error('subscribeTodos Fehler:', error);
+    }
+  );
 }
 
 // Start the live subscriptions for both features
